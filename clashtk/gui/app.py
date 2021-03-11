@@ -12,10 +12,11 @@ _MAIN_FRAMES = {
 }
 
 
-class App:
+class App(tk.Tk):
     def __init__(self, hide: bool = False) -> None:
-        self._root = tk.Tk()
-        self._root.title = f"Clash For {platform.system()}"
+        tk.Tk.__init__(self)
+
+        self.title = f"Clash For {platform.system()}"
 
         self._frame = None
 
@@ -23,7 +24,7 @@ class App:
         self.init_ui()
 
     def init_ui(self) -> None:
-        side_menu = SideMenu(self._root, self)
+        side_menu = SideMenu(self)
         side_menu.pack(side=tk.LEFT)
 
         self.change_frame('main')
@@ -31,8 +32,8 @@ class App:
     def change_frame(self, frame_name: str):
         if self._frame:
             self._frame.destroy()
-        self._frame = _MAIN_FRAMES[frame_name](self._root)
+        self._frame = _MAIN_FRAMES[frame_name](self)
         self._frame.pack(expand=True)
 
     def run(self):
-        self._root.mainloop()
+        self.mainloop()
