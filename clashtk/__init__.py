@@ -1,3 +1,4 @@
+import os
 import logging
 
 from .common.log import logger
@@ -8,3 +9,9 @@ logger.addHandler(logging.NullHandler())
 
 # Set default language to avoid no language error.
 i18n.change_language()
+
+
+# Support HiDPI in Windows
+if os.name == 'nt':
+    import ctypes
+    ctypes.windll.shcore.SetProcessDpiAwareness(1)
