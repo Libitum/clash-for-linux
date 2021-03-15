@@ -1,11 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from . import app
-
 
 class SideMenu(ttk.Frame):
-    def __init__(self, master: app.App):
+    def __init__(self, master: tk.Misc):
         ttk.Frame.__init__(self, master)
 
         self.init_ui()

@@ -4,6 +4,7 @@ import tkinter as tk
 from .sidemenu import SideMenu
 from .config_frame import ConfigFrame
 from .main_frame import MainFrame
+from .tools import async_executor
 
 
 _MAIN_FRAMES = {
@@ -15,11 +16,11 @@ _MAIN_FRAMES = {
 class App(tk.Tk):
     def __init__(self, hide: bool = False) -> None:
         tk.Tk.__init__(self)
-
         self.title = f"Clash For {platform.system()}"
 
         self._frame = None
 
+        async_executor.AsyncExecutor().init(self)
         # TODO: iconify the window if started automatically.
         self.init_ui()
 
