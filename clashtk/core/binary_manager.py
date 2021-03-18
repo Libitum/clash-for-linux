@@ -3,6 +3,7 @@ import os
 import platform
 import subprocess
 import zipfile
+import gzip
 from typing import List, Optional
 
 import requests
@@ -11,8 +12,8 @@ from .config import Config
 
 
 class BinaryManager:
-    def __init__(self, config: Config = None) -> None:
-        self._config = config or Config()
+    def __init__(self, config: Config) -> None:
+        self._config = config
 
     def get_version(self) -> str:
         cmd = self._config.binary_path + ' -v'
@@ -36,10 +37,11 @@ class BinaryManager:
     def _generate_download_url(self, version: str) -> str:
         system_info = platform.system().lower()
         arch_info = platform.machine().lower()
+        format = 'zip' if system_info == 'windows' else 'gz'
 
         # TODO: Only support windows right now.
         url = ("https://github.com/Dreamacro/clash/releases/download/"
-               f"{version}/clash-{system_info}-{arch_info}-{version}.zip")
+               f"{version}/clash-{system_info}-{arch_info}-{version}.{format}")
 
         return url
 
@@ -67,6 +69,19 @@ class BinaryManager:
                         zip.extract(name, extract_path)
                         extracted_file = os.path.join(extract_path, name)
                         break
+        else:
+            try:
+                extracted_file = os.path.splitext(file_path)[0]
+                with gzip.open(file_path, 'rb') as gz, open(extracted_file, 'wb') as fh:
+                    while True:
+                        data = gz.read(10240)
+                        if data:
+                            fh.write(data)
+                        else:
+                            break
+
+            except gzip.BadGzipFile:
+                extracted_file = None
 
         if extracted_file:
             os.remove(file_path)

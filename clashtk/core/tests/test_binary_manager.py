@@ -5,6 +5,6 @@ _bm = BinaryManager(Config('test_config'))
 
 
 class TestBinaryManager:
-    def test_upzip(self):
+    def test_upgrade(self):
         _bm.upgrade('v1.4.2')
         assert 'v1.4.2' == _bm.get_version()

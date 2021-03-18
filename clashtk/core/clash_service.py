@@ -12,7 +12,6 @@ class ClashService:
         return cls._instance
 
     # Self defined initialization method for singleton.
-    def _init_(self):
-        self.config = Config()
+    def _init_(self, config: Config = None):
+        self.config = config or Config()
         self.binary_manager = BinaryManager(self.config)
-
