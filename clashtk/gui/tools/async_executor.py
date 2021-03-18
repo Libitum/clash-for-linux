@@ -3,7 +3,7 @@ The module for asynchronous running tasks in Tk GUI.
 """
 import tkinter as tk
 from concurrent import futures
-from typing import Any, Callable, List, Tuple, TypeVar
+from typing import Any, Callable, List, Optional, Tuple, TypeVar
 
 _THREAD_NUM = 5
 _EVENT_PERIOD_MS = 200
@@ -37,25 +37,31 @@ class AsyncExecutor:
             raise RuntimeError('Can be only initialized once')
 
         self._threadpool = futures.ThreadPoolExecutor(_THREAD_NUM, "clash-")
-        self._event_list: List[Tuple[futures.Future, Callable[[Any], None]]] = []
+        self._event_list: List[
+            Tuple[
+                futures.Future,
+                Callable[[Any], None],
+                Optional[Callable[[], None]]
+            ]
+        ] = []
         self._master: tk.Misc = master
 
     def submit(self, task: Callable[[], T],
-               callback: Callable[[T], None]) -> None:
+               on_success: Callable[[T], None],
+               on_failure: Callable[[], None] = None) -> None:
         """
         Submit a task into threadpool, and call the "callback" automatically
         when the task is done.
 
         Args:
             task: The callable function running in thread.
-            callback: Will run this "callback" automatically when the task is done.
+            on_success: Will run this "on_success" automatically when the task is done.
         """
         if not getattr(self, '_master', None):
             raise RuntimeError('Not initialized. Please call init() at first.')
 
         future = self._threadpool.submit(task)
-        future.done
-        self._event_list.append((future, callback))
+        self._event_list.append((future, on_success, on_failure))
         # If the len of event list is 1, means that it's not running.
         if len(self._event_list) == 1:
             self._master.after(_EVENT_PERIOD_MS, self._handle_event)
@@ -63,9 +69,10 @@ class AsyncExecutor:
     def _handle_event(self):
         """ Works as event loop to do the callback. """
         for event in self._event_list:
-            future, callback = event
+            future, on_success, _ = event
+            # TODO: handle exception
             if future.done():
-                callback(future.result())
+                on_success(future.result())
                 self._event_list.remove(event)
 
         # Try to handle events in next cycle.
