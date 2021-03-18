@@ -2,7 +2,7 @@
 import logging
 
 # Common logger in the whole library
-logger = logging.getLogger('clash-for-linux')
+logger = logging.getLogger('clashtk')
 
 
 def enable_log_for_debug():

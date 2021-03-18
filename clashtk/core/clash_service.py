@@ -1,4 +1,5 @@
-from concurrent import futures
+from clashtk.core.binary_manager import BinaryManager
+from clashtk.core.config import Config
 
 
 class ClashService:
@@ -12,7 +13,6 @@ class ClashService:
 
     # Self defined initialization method for singleton.
     def _init_(self):
-        self.threadpool = futures.ThreadPoolExecutor(5, "clash-")
+        self.config = Config()
+        self.binary_manager = BinaryManager(self.config)
 
-    def start_to_get_current_version(self):
-        pass
