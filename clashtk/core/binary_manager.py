@@ -5,6 +5,7 @@ import subprocess
 import zipfile
 import gzip
 from typing import List, Optional
+import stat
 
 import requests
 
@@ -16,7 +17,8 @@ class BinaryManager:
         self._config = config
 
     def get_version(self) -> str:
-        cmd = self._config.binary_path + ' -v'
+        cmd = [self._config.binary_path, '-v']
+        os.chmod(self._config.binary_path, stat.S_IEXEC)
         result = subprocess.run(cmd, capture_output=True)
         return result.stdout.split()[1].decode()
 
@@ -38,6 +40,9 @@ class BinaryManager:
         system_info = platform.system().lower()
         arch_info = platform.machine().lower()
         format = 'zip' if system_info == 'windows' else 'gz'
+
+        if arch_info == 'x86_64':
+            arch_info = 'amd64'
 
         # TODO: Only support windows right now.
         url = ("https://github.com/Dreamacro/clash/releases/download/"
