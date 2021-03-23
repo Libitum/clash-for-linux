@@ -3,12 +3,12 @@ import tkinter as tk
 
 from .sidemenu import SideMenu
 from .config_frame import ConfigFrame
-from .main_frame import MainFrame
+from .status_frame import StatusFrame
 from .tools import async_executor
 
 
 _MAIN_FRAMES = {
-    'main': MainFrame,
+    'main': StatusFrame,
     'config': ConfigFrame
 }
 

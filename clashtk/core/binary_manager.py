@@ -16,25 +16,52 @@ class BinaryManager:
     def __init__(self, config: Config) -> None:
         self._config = config
 
+    def is_binary_exist(self) -> bool:
+        return os.path.exists(self._config.binary_path)
+
     def get_version(self) -> str:
+        """Gets the current binary's version.
+        Returns:
+            version(str): the current binary's version.
+        """
+        if not self.is_binary_exist():
+            return ""
+
         cmd = [self._config.binary_path, '-v']
-        os.chmod(self._config.binary_path, stat.S_IEXEC)
         result = subprocess.run(cmd, capture_output=True)
         return result.stdout.split()[1].decode()
 
-    def get_newest_version(self) -> str:
+    def get_latest_version(self) -> str:
+        """Gets the latest version from github.
+        Returns:
+            version(str): the latest version from github.
+        """
         url = "https://api.github.com/repos/Dreamacro/clash/releases/latest"
         res = requests.get(url)
         res.raise_for_status()
         return res.json()['tag_name']
 
     def upgrade(self, version: Optional[str] = None) -> None:
-        version = version or self.get_newest_version()
+        """Upgrades to the latest or specified version.
+        Args:
+            version(Optional[str]): the specified version that upgrade to.
+        """
+        version = version or self.get_latest_version()
+        if not version:
+            # There is no legal latest version exist, so just return.
+            return
+
+        current_version = self.get_version()
+        # If the current version is same with the target version, just return.
+        if version == current_version:
+            return
+
         url = self._generate_download_url(version)
         zip_file = self._download(url)
         binary_path = self._unzip_file(zip_file)
 
         os.replace(binary_path, self._config.binary_path)
+        os.chmod(self._config.binary_path, stat.S_IEXEC)
 
     def _generate_download_url(self, version: str) -> str:
         system_info = platform.system().lower()

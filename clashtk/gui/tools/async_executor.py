@@ -41,14 +41,14 @@ class AsyncExecutor:
             Tuple[
                 futures.Future,
                 Callable[[Any], None],
-                Optional[Callable[[], None]]
+                Optional[Callable[[BaseException], None]]
             ]
         ] = []
         self._master: tk.Misc = master
 
     def submit(self, task: Callable[[], T],
                on_success: Callable[[T], None],
-               on_failure: Callable[[], None] = None) -> None:
+               on_failure: Callable[[BaseException], None] = None) -> None:
         """
         Submit a task into threadpool, and call the "callback" automatically
         when the task is done.
@@ -69,10 +69,14 @@ class AsyncExecutor:
     def _handle_event(self):
         """ Works as event loop to do the callback. """
         for event in self._event_list:
-            future, on_success, _ = event
+            future, on_success, on_failure = event
             # TODO: handle exception
             if future.done():
-                on_success(future.result())
+                if future.exception():
+                    if on_failure:
+                        on_failure(future.exception() or BaseException())
+                else:
+                    on_success(future.result())
                 self._event_list.remove(event)
 
         # Try to handle events in next cycle.
