@@ -1,22 +1,16 @@
 import platform
 import tkinter as tk
+import tkinter.ttk as ttk
 
-from .sidemenu import SideMenu
 from .config_frame import ConfigFrame
 from .status_frame import StatusFrame
 from .tools import async_executor
 
 
-_MAIN_FRAMES = {
-    'main': StatusFrame,
-    'config': ConfigFrame
-}
-
-
 class App(tk.Tk):
     def __init__(self, hide: bool = False) -> None:
         tk.Tk.__init__(self)
-        self.title = f"Clash For {platform.system()}"
+        self.title(f"Clash For {platform.system()}")
 
         self._frame = None
 
@@ -25,16 +19,11 @@ class App(tk.Tk):
         self.init_ui()
 
     def init_ui(self) -> None:
-        side_menu = SideMenu(self)
-        side_menu.pack(side=tk.LEFT)
+        nb = ttk.Notebook(self, width=500)
+        nb.add(StatusFrame(nb), text="Status")
+        nb.add(ConfigFrame(nb), text="Config")
 
-        self.change_frame('main')
-
-    def change_frame(self, frame_name: str):
-        if self._frame:
-            self._frame.destroy()
-        self._frame = _MAIN_FRAMES[frame_name](self)
-        self._frame.pack(expand=True)
+        nb.pack(expand=True, fill=tk.BOTH)
 
     def run(self):
         self.mainloop()
