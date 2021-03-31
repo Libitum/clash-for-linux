@@ -24,12 +24,10 @@ class BinaryManager:
         Returns:
             version(str): the current binary's version.
         """
-        if not self.is_binary_exist():
-            return ""
-
-        cmd = [self._config.binary_path, '-v']
-        result = subprocess.run(cmd, capture_output=True)
-        return result.stdout.split()[1].decode()
+        url = self._config.control_url + '/version'
+        res = requests.get(url)
+        res.raise_for_status()
+        return res.json()['version']
 
     def get_latest_version(self) -> str:
         """Gets the latest version from github.
