@@ -9,6 +9,7 @@ requests = "*"
 [dev-packages]
 flake8 = "*"
 pytest = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3"

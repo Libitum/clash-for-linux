@@ -2,9 +2,10 @@ import platform
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from .config_frame import ConfigFrame
+from .log_frame import LogFrame
 from .status_frame import StatusFrame
 from .tools import async_executor
+from .traffic_frame import TrafficFrame
 
 
 class App(tk.Tk):
@@ -19,9 +20,11 @@ class App(tk.Tk):
         self.init_ui()
 
     def init_ui(self) -> None:
+        TrafficFrame(self).pack(side=tk.TOP, fill=tk.X)
+
         nb = ttk.Notebook(self, width=500)
         nb.add(StatusFrame(nb), text="Status")
-        nb.add(ConfigFrame(nb), text="Config")
+        nb.add(LogFrame(nb), text="Log")
 
         nb.pack(expand=True, fill=tk.BOTH)
 
