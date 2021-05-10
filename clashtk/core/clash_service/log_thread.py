@@ -4,10 +4,10 @@ import threading
 import time
 
 import requests
-from clashtk.core.config import Config
+from clashtk.common.config import Config
 
 
-class LogFetcherThread(object):
+class LogThread(object):
     def __init__(self, config: Config = None) -> None:
         self._config = config or Config()
 
@@ -17,7 +17,11 @@ class LogFetcherThread(object):
 
         self._queue = queue.Queue(50)
 
+    def start(self):
         self._thread.start()
+
+    def stop(self):
+        pass
 
     def get(self):
         try:

@@ -1,18 +1,16 @@
 import json
 import threading
-import time
 
 import requests
+from clashtk.common.config import Config
 
-from .config import Config
 
-
-class TrafficFetcherThread(object):
+class TrafficThread(object):
     def __init__(self, config: Config = None) -> None:
         self._config = config or Config()
 
         self._thread = threading.Thread(target=self._fetch_traffic_info,
-                                        name="Thread-TrafficFetcher",
+                                        name="TrafficFetcher",
                                         daemon=True)
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
@@ -39,7 +37,6 @@ class TrafficFetcherThread(object):
             self._traffic_info = traffic_info
 
     def _fetch_traffic_info(self):
-        time.sleep(1)   # To make sure that the clash process is ready.
         url = self._config.control_url + '/traffic'
         with requests.get(url, stream=True) as stream:
             for chunk in stream.iter_content(chunk_size=None):

@@ -2,10 +2,13 @@ import platform
 import tkinter as tk
 import tkinter.ttk as ttk
 
+from clashtk.core.clash_service import ClashService
+
 from .log_frame import LogFrame
+from .proxy_frame import ProxyFrame
 from .status_frame import StatusFrame
 from .tools import async_executor
-from .traffic_frame import TrafficFrame
+from .top_frame import TopFrame
 
 
 class App(tk.Tk):
@@ -15,15 +18,19 @@ class App(tk.Tk):
 
         self._frame = None
 
+        clash_service = ClashService()
+        clash_service.start()
+
         async_executor.AsyncExecutor().init(self)
         # TODO: iconify the window if started automatically.
         self.init_ui()
 
     def init_ui(self) -> None:
-        TrafficFrame(self).pack(side=tk.TOP, fill=tk.X)
+        TopFrame(self).pack(side=tk.TOP, fill=tk.X, expand=tk.YES)
 
-        nb = ttk.Notebook(self, width=500)
+        nb = ttk.Notebook(self, width=1000)
         nb.add(StatusFrame(nb), text="Status")
+        nb.add(ProxyFrame(nb), text="Proxy")
         nb.add(LogFrame(nb), text="Log")
 
         nb.pack(expand=True, fill=tk.BOTH)

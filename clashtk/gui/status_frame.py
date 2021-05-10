@@ -53,10 +53,10 @@ class StatusFrame(ttk.Frame):
         self._exector = AsyncExecutor()
         self._clash_service = ClashService()
 
-        self._exector.submit(self._clash_service.binary_manager.get_version,
-                             self._on_current_version_arrived)
-        self._exector.submit(self._clash_service.binary_manager.get_latest_version,
-                             self._on_latest_version_arrived)
+        #self._exector.submit(self._clash_service.binary_manager.get_version,
+        #                     self._on_current_version_arrived)
+        #self._exector.submit(self._clash_service.binary_manager.get_latest_version,
+        #                     self._on_latest_version_arrived)
 
     def _on_current_version_arrived(self, version):
         self._current_version.set(version)

@@ -8,7 +8,7 @@ class LogFrame(ttk.Frame):
     def __init__(self, master: tk.Misc):
         ttk.Frame.__init__(self, master)
 
-        self._log_fetcher = ClashService().log_service
+        self._log_fetcher = ClashService().clash_log
 
         self._init_ui()
         self._init_event()

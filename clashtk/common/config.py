@@ -4,7 +4,8 @@ import platform
 
 class Config:
     def __init__(self, root: str = None) -> None:
-        self._root = root or os.path.join(os.path.expanduser('~'), '.config', 'clashtk')
+        self._root = root or os.path.join(
+            os.path.expanduser('~'), '.config', 'clashtk')
         os.makedirs(self.binary_dir, exist_ok=True)
         os.makedirs(self.profile_dir, exist_ok=True)
 
